@@ -20,16 +20,16 @@ package {
     // to get the below license kinds:
     //   SPDX-license-identifier-Apache-2.0
     //   SPDX-license-identifier-BSD
-    default_applicable_licenses: ["external_minigbm_license"],
+    default_applicable_licenses: ["external_raspberrypi_minigbm_license"],
 }
 
 cc_library_shared {
-    name: "mapper.minigbm",
-    defaults: ["minigbm_gralloc4_common_defaults"],
-    vintf_fragments: ["mapper.minigbm.xml"],
+    name: "mapper.minigbm_rpi",
+    defaults: ["minigbm_gralloc4_common_defaults_rpi"],
+    vintf_fragments: ["mapper.minigbm_rpi.xml"],
     shared_libs: [
         "android.hardware.graphics.allocator-V2-ndk",
-        "libminigbm_gralloc",
+        "libminigbm_gralloc_rpi",
     ],
     header_libs: [
         "libbase_headers",
@@ -37,7 +37,7 @@ cc_library_shared {
         "libimapper_providerutils",
     ],
     srcs: [
-        ":minigbm_gralloc4_mapper_files",
+        ":minigbm_gralloc4_mapper_files_rpi",
         "Mapper.cpp",
     ],
     cpp_std: "c++20",

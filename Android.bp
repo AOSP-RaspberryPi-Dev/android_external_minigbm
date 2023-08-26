@@ -2,7 +2,7 @@
 // found in the LICENSE file.
 
 package {
-    default_applicable_licenses: ["external_minigbm_license"],
+    default_applicable_licenses: ["external_raspberrypi_minigbm_license"],
 }
 
 // Added automatically by a large-scale-change that took the approach of
@@ -20,7 +20,7 @@ package {
 // used in the current project.
 // See: http://go/android-license-faq
 license {
-    name: "external_minigbm_license",
+    name: "external_raspberrypi_minigbm_license",
     visibility: [":__subpackages__"],
     license_kinds: [
         "SPDX-license-identifier-Apache-2.0",
@@ -33,7 +33,7 @@ license {
 }
 
 filegroup {
-    name: "minigbm_core_files",
+    name: "minigbm_core_files_rpi",
 
     srcs: [
         "amdgpu.c",
@@ -53,7 +53,7 @@ filegroup {
 }
 
 filegroup {
-    name: "minigbm_gralloc_common_files",
+    name: "minigbm_gralloc_common_files_rpi",
 
     srcs: [
         "cros_gralloc/cros_gralloc_buffer.cc",
@@ -63,12 +63,12 @@ filegroup {
 }
 
 filegroup {
-    name: "minigbm_gralloc0_files",
+    name: "minigbm_gralloc0_files_rpi",
     srcs: ["cros_gralloc/gralloc0/gralloc0.cc"],
 }
 
 cc_defaults {
-    name: "minigbm_defaults",
+    name: "minigbm_defaults_rpi",
 
     cflags: [
         "-D_GNU_SOURCE=1",
@@ -89,22 +89,22 @@ cc_defaults {
 }
 
 cc_library_headers {
-    name: "minigbm_headers",
+    name: "minigbm_headers_rpi",
     host_supported: true,
     vendor_available: true,
     export_include_dirs: ["."],
 }
 
 cc_defaults {
-    name: "minigbm_cros_gralloc_defaults",
+    name: "minigbm_cros_gralloc_defaults_rpi",
 
-    defaults: ["minigbm_defaults"],
+    defaults: ["minigbm_defaults_rpi"],
 
     header_libs: [
         "libhardware_headers",
         "libnativebase_headers",
         "libsystem_headers",
-        "minigbm_headers",
+        "minigbm_headers_rpi",
     ],
 
     static_libs: ["libarect"],
@@ -123,142 +123,27 @@ cc_defaults {
 }
 
 cc_defaults {
-    name: "minigbm_cros_gralloc_library_defaults",
+    name: "minigbm_cros_gralloc_library_defaults_rpi",
 
-    defaults: ["minigbm_cros_gralloc_defaults"],
+    defaults: ["minigbm_cros_gralloc_defaults_rpi"],
     srcs: [
-        ":minigbm_core_files",
-        ":minigbm_gralloc_common_files",
+        ":minigbm_core_files_rpi",
+        ":minigbm_gralloc_common_files_rpi",
     ],
 }
 
 cc_defaults {
-    name: "minigbm_cros_gralloc0_defaults",
+    name: "minigbm_cros_gralloc0_defaults_rpi",
 
-    defaults: ["minigbm_cros_gralloc_defaults"],
+    defaults: ["minigbm_cros_gralloc_defaults_rpi"],
     relative_install_path: "hw",
 
-    srcs: [":minigbm_gralloc0_files"],
-}
-
-cc_library {
-    name: "libgbm",
-    defaults: ["minigbm_defaults"],
-    host_supported: true,
-
-    srcs: [
-        ":minigbm_core_files",
-        "gbm.c",
-        "gbm_helpers.c",
-    ],
-
-    target: {
-        host: {
-            // Avoid linking to another host copy of libdrm; this library will cause
-            // binary GPU drivers to be loaded from the host, which might be linked
-            // to a system copy of libdrm, which conflicts with the AOSP one
-            allow_undefined_symbols: true,
-            header_libs: ["libdrm_headers"],
-        },
-        android: {
-            shared_libs: [
-                "libdrm",
-                "libcutils",
-                "liblog"
-            ],
-        },
-    },
-    apex_available: [
-        "//apex_available:platform",
-        "com.android.virt",
-    ],
-
-    export_include_dirs: ["."],
+    srcs: [":minigbm_gralloc0_files_rpi"],
 }
 
 // Generic
 cc_library_shared {
-    name: "libminigbm_gralloc",
-    defaults: ["minigbm_cros_gralloc_library_defaults"],
+    name: "libminigbm_gralloc_rpi",
+    defaults: ["minigbm_cros_gralloc_library_defaults_rpi"],
     cflags: ["-DHAS_DMABUF_SYSTEM_HEAP"],
-}
-
-cc_library_shared {
-    name: "gralloc.minigbm",
-    defaults: ["minigbm_cros_gralloc0_defaults"],
-    shared_libs: ["libminigbm_gralloc"],
-}
-
-// Intel
-cc_library_shared {
-    name: "libminigbm_gralloc_intel",
-    defaults: ["minigbm_cros_gralloc_library_defaults"],
-    cflags: ["-DDRV_I915"],
-    enabled: false,
-    arch: {
-        x86: {
-            enabled: true,
-        },
-        x86_64: {
-            enabled: true,
-        },
-    },
-}
-
-cc_library_shared {
-    name: "gralloc.minigbm_intel",
-    defaults: ["minigbm_cros_gralloc0_defaults"],
-    shared_libs: ["libminigbm_gralloc_intel"],
-    enabled: false,
-    arch: {
-        x86: {
-            enabled: true,
-        },
-        x86_64: {
-            enabled: true,
-        },
-    },
-}
-
-// Meson
-cc_library_shared {
-    name: "libminigbm_gralloc_meson",
-    defaults: ["minigbm_cros_gralloc_library_defaults"],
-    cflags: ["-DDRV_MESON"],
-}
-
-cc_library_shared {
-    name: "gralloc.minigbm_meson",
-    defaults: ["minigbm_cros_gralloc0_defaults"],
-    shared_libs: ["libminigbm_gralloc_meson"],
-}
-
-// MSM
-cc_library_shared {
-    name: "libminigbm_gralloc_msm",
-    defaults: ["minigbm_cros_gralloc_library_defaults"],
-    cflags: [
-        "-DDRV_MSM",
-        "-DQCOM_DISABLE_COMPRESSED_NV12",
-        "-DHAS_DMABUF_SYSTEM_HEAP",
-    ],
-}
-
-cc_library_shared {
-    name: "gralloc.minigbm_msm",
-    defaults: ["minigbm_cros_gralloc0_defaults"],
-    shared_libs: ["libminigbm_gralloc_msm"],
-}
-
-// ARCVM
-cc_library_shared {
-    name: "libminigbm_gralloc_arcvm",
-    defaults: ["minigbm_cros_gralloc_library_defaults"],
-    cflags: ["-DVIRTIO_GPU_NEXT"],
-}
-
-cc_library_shared {
-    name: "gralloc.minigbm_arcvm",
-    defaults: ["minigbm_cros_gralloc0_defaults"],
-    shared_libs: ["libminigbm_gralloc_arcvm"],
 }
