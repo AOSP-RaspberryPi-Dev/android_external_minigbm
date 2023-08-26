@@ -40,6 +40,13 @@ cc_library_shared {
     srcs: [
         ":minigbm_gralloc4_mapper_files_rpi",
     ],
+ }
+
+cc_library_shared {
+    name: "mapper.minigbm_gbm_mesa",
+    vintf_fragments: ["mapper.minigbm_gbm_mesa.xml"],
+    defaults: ["minigbm_mapper_stablec_defaults_rpi"],
+    shared_libs: ["libminigbm_gralloc_gbm_mesa"],
 }
 
 cc_library_shared {

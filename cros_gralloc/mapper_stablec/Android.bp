@@ -23,22 +23,32 @@ package {
     default_applicable_licenses: ["external_raspberrypi_minigbm_license"],
 }
 
-cc_library_shared {
-    name: "mapper.minigbm_rpi",
+filegroup {
+    name: "minigbm_mapper_stablec_files_rpi",
+    srcs: [
+        ":minigbm_gralloc4_mapper_files_rpi",
+        "Mapper.cpp",
+    ],
+}
+
+cc_defaults {
+    name: "minigbm_mapper_stablec_defaults_rpi",
     defaults: ["minigbm_gralloc4_common_defaults_rpi"],
-    vintf_fragments: ["mapper.minigbm_rpi.xml"],
     shared_libs: [
         "android.hardware.graphics.allocator-V2-ndk",
-        "libminigbm_gralloc_rpi",
     ],
     header_libs: [
         "libbase_headers",
         "libimapper_stablec",
         "libimapper_providerutils",
     ],
-    srcs: [
-        ":minigbm_gralloc4_mapper_files_rpi",
-        "Mapper.cpp",
-    ],
+    srcs: [":minigbm_mapper_stablec_files_rpi"],
     cpp_std: "c++20",
+}
+
+cc_library_shared {
+    name: "mapper.minigbm_rpi",
+    defaults: ["minigbm_mapper_stablec_defaults_rpi"],
+    shared_libs: ["libminigbm_gralloc_rpi"],
+    vintf_fragments: ["mapper.minigbm_rpi.xml"],
 }
