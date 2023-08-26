@@ -25,10 +25,9 @@ cc_library_shared {
 
 
 cc_binary {
-    name: "android.hardware.graphics.allocator@4.0-service.minigbm_gbm_mesa",
-    vintf_fragments: ["gbm_mesa.allocator@4.0.xml"],
-    init_rc: ["android.hardware.graphics.allocator@4.0-service.minigbm_gbm_mesa.rc"],
-    defaults: ["minigbm_gralloc4_allocator_defaults_rpi"],
+    name: "android.hardware.graphics.allocator-service.minigbm_gbm_mesa",
+    init_rc: ["android.hardware.graphics.allocator-service.minigbm_gbm_mesa.rc"],
+    defaults: ["minigbm_gralloc_aidl_allocator_defaults_rpi"],
     shared_libs: ["libminigbm_gralloc_gbm_mesa"],
 }
 

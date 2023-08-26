@@ -23,12 +23,24 @@ package {
     default_applicable_licenses: ["external_raspberrypi_minigbm_license"],
 }
 
-cc_binary {
-    name: "android.hardware.graphics.allocator-service.minigbm_rpi",
+filegroup {
+    name: "minigbm_gralloc_aidl_allocator_files_rpi",
+    srcs: [
+        "Allocator.cpp",
+        "Main.cpp",
+    ],
+}
+
+filegroup {
+    name: "minigbm_gralloc_aidl_allocator_manifest_rpi",
+    srcs: ["allocator_rpi.xml"],
+}
+
+cc_defaults {
+    name: "minigbm_gralloc_aidl_allocator_defaults_rpi",
     defaults: ["minigbm_cros_gralloc_defaults_rpi"],
     relative_install_path: "hw",
-    init_rc: ["allocator_rpi.rc"],
-    vintf_fragments: ["allocator_rpi.xml"],
+    vintf_fragments: [":minigbm_gralloc_aidl_allocator_manifest_rpi"],
     vendor: true,
     shared_libs: [
         "android.hardware.graphics.allocator-V2-ndk",
@@ -38,14 +50,17 @@ cc_binary {
         "libgralloctypes",
         "libhidlbase",
         "liblog",
-        "libminigbm_gralloc_rpi",
         "libminigbm_gralloc4_utils_rpi",
     ],
     static_libs: [
         "libaidlcommonsupport",
     ],
-    srcs: [
-        "Allocator.cpp",
-        "Main.cpp",
-    ],
+    srcs: [":minigbm_gralloc_aidl_allocator_files_rpi"],
+}
+
+cc_binary {
+    name: "android.hardware.graphics.allocator-service.minigbm_rpi",
+    defaults: ["minigbm_gralloc_aidl_allocator_defaults_rpi"],
+    init_rc: ["allocator_rpi.rc"],
+    shared_libs: ["libminigbm_gralloc_rpi"],
 }
